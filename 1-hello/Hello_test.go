@@ -9,6 +9,14 @@ import "testing"
   
   "t" 参数是用于报告测试失败和附加的日志信息。
 */
+
+var b string = "Test"
+
 func TestHello(t *testing.T) {
-	  say("Test")
-}
+    s := "Test"
+    s = "Test again"
+	  say(s)
+
+    b = "Changed"
+    say(b)
+  }
