@@ -19,6 +19,12 @@ func init() {
 	n = 2
 }
 
+func init() {
+	// ":=" 会声明一个本地变量 "n" 掩盖（不是覆盖）全局的那个 n
+	n := "string 0"
+	fmt.Printf("Third init(): n=%s\n", n)
+}
+
 func main() {
 	fmt.Printf("main() function: n=%d\n", n)
 	fmt.Printf("sub.getNumber() function: n=%d\n", getNumber())
