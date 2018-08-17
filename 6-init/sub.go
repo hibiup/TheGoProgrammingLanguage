@@ -6,7 +6,7 @@ import (
 
 func init() {
 	fmt.Printf("sub.init(): n=%d\n", n)
-	n = 3
+	n = n+1
 }
 
 func getNumber() int {

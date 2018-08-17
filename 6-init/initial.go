@@ -11,12 +11,12 @@ init初始化函数不能被调用或引用外，其他行为和普通函数类�
 */
 func init() {
 	fmt.Printf("First init(): n=%d\n", n)
-	n = 1
+	n = n+1
 }
 
 func init() {
-	fmt.Printf("Second init(): n=%d\n", n)
-	n = 2
+	fmt.Printf("Second init(): sub.getNumber()=%d\n",  getNumber())
+	n = n+1
 }
 
 func init() {
