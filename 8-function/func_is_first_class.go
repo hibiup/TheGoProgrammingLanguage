@@ -22,12 +22,6 @@ var prereqs = map[string][]string{
 	"programming languages": {"data structures", "computer organization"},
 }
 
-func main() {
-	for i, course := range topoSort(prereqs) {
-		fmt.Printf("%d:\t%s\n", i+1, course)
-	}
-}
-
 func topoSort(m map[string][]string) []string {
 	var order []string
 	seen := make(map[string]bool)
