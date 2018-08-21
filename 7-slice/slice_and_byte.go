@@ -40,4 +40,9 @@ func main() {
 
 	fab_to_april[0] = "FEB"                                                    // slice 超出后会复制到新的地址上，不再和 array 共享
 	fmt.Printf("\nmonths:\t\t%s\nfab_to_april:\t%s\n", months, fab_to_april)   // 因此这次只有 slice 被更改，而 months 不变。
+
+	//  make 内置函数可以制造一个 slice 空间
+	slice_space := make([]string, 2, 10)  // Len=2, Cap=10
+	fmt.Printf("%s\n", slice_space)
+	fmt.Printf("\nLen/Cap of fab_to_april %d/%d\n", len(slice_space),cap(slice_space))
 }
