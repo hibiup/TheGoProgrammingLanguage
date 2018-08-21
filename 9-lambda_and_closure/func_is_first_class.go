@@ -2,7 +2,6 @@ package main
 
 import (
 	"sort"
-	"fmt"
 )
 
 var prereqs = map[string][]string{
