@@ -2,8 +2,10 @@ package deferred
 
 import (
 	"testing"
+	"fmt"
 )
 
 func TestDeferWithPanic(t *testing.T) {
-	defer_with_panic()
+	err := defer_with_panic()
+	fmt.Printf("testcase: %s\n", err)
 }
