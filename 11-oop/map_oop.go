@@ -1,7 +1,7 @@
 package oop
 
 // Values maps a string key to a list of values.
-type Values map[string] []string
+type Values map[string][]string
 
 // Get returns the first value associated with the given key,
 // or "" if there are none.
@@ -16,4 +16,9 @@ func (v Values) Get(key string) string {
 // It appends to any existing values associated with key.
 func (v Values) Add(key, value string) {
 	v[key] = append(v[key], value)
+}
+
+// 小写开头的方法，只在包内可见
+func (v *Values) pointerAdd(key, value string) {
+	(*v)[key] = append((*v)[key], value)
 }
