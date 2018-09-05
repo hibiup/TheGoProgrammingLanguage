@@ -24,18 +24,18 @@ func Exception() {
 		fmt.Println("System exit!")
 	}()
 
-	// 启动监控县城等待所有线程结束
+	// 启动监控线程等待所有线程结束
 	wg.Add(1) // 为监控线程自己加一
 	go monitor(finish, &wg)
 
 	// 启动业务线程
 	for i := 0; i < 10; i++ {
-		wg.Add(1) // waitGroup 加一
+		wg.Add(1)
 		go job_manager(i, &wg)
 	}
 
 	// 通知监控线程可以退出了（会保持至所有业务线程结束）
-	fmt.Println("All job has been lunched. main goroutine is eligabled to exit")
+	fmt.Println("All job has been lunched. monitor goroutine is eligabled to exit")
 	finish <- struct{}{}
 }
 
@@ -58,7 +58,7 @@ func job_manager(index int, wg *sync.WaitGroup) {
 	defer func() { // 业务监管线程 defer
 		switch p := recover(); p.(type) { // 如果业务线程存在异常，处理之
 		case Error:
-			fmt.Printf("panic: %s\n", p.(Error).Error_message)
+			fmt.Printf("%s (panic)\n", p.(Error).Error_message)
 		default:
 		}
 
@@ -66,17 +66,18 @@ func job_manager(index int, wg *sync.WaitGroup) {
 		(*wg).Done()
 	}()
 
-	fmt.Println(index, "Business goroutine has been lunching!")
+	fmt.Println(index, "Business goroutine is being lunched!")
 	client(index) // 调用业务函数(有些会抛出异常)
-	fmt.Println(index, "Business goroutine finished by normal")
+	fmt.Println(index, "Business goroutine finished normally")
 }
 
 // 业务函数
 func client(index int) {
 	time.Sleep(1 * time.Second)
+	fmt.Println(index, "Business goroutine is running...")
+
 	if index%2 == 0 {
 		panic(Error{1, fmt.Sprintf("%d Business goroutine failed!", index)}) // 故意制造故障
-	} else {
-		fmt.Println(index, "Business goroutine is running...") // 正常结束
 	}
+	// 正常结束
 }
