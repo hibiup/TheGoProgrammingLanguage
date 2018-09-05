@@ -14,7 +14,7 @@ type Error struct {
 
 func Exception() {
 	runtime.GOMAXPROCS(2) // 设置并行线程数
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	finish := make(chan struct{}) // 用于主线程接受退出通知
 
 	defer func() { // 主线程 defer
@@ -25,13 +25,13 @@ func Exception() {
 	}()
 
 	// 启动监控线程等待所有线程结束
-	wg.Add(1) // 为监控线程自己加一
-	go monitor(finish, &wg)
+	(*wg).Add(1) // 为监控线程自己加一
+	go monitor(finish, wg)
 
 	// 启动业务线程
 	for i := 0; i < 10; i++ {
-		wg.Add(1)
-		go job_manager(i, &wg)
+		(*wg).Add(1)
+		go job_manager(i, wg)
 	}
 
 	// 通知监控线程可以退出了（会保持至所有业务线程结束）
@@ -45,11 +45,11 @@ func monitor(finish chan struct{}, wg *sync.WaitGroup) {
 
 	select {
 	case <-finish:
-		(*wg).Done() // 如果收到“结束"消息就给自己减一
+		wg.Done() // 如果收到“结束"消息就给自己减一
 	}
 
 	fmt.Println("Waiting for all job finish.")
-	(*wg).Wait() // 挂起等待业务线程全部结束
+	wg.Wait() // 挂起等待业务线程全部结束
 	fmt.Println("WaitGroup reaches to 0")
 }
 
@@ -63,7 +63,7 @@ func job_manager(index int, wg *sync.WaitGroup) {
 		}
 
 		// 无论是否有异常，WaitGroup 为结束的业务线程减一
-		(*wg).Done()
+		wg.Done()
 	}()
 
 	fmt.Println(index, "Business goroutine is being lunched!")
