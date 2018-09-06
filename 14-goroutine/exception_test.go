@@ -5,5 +5,8 @@ import (
 )
 
 func TestException(t *testing.T) {
-	Exception()
+	Run(1)
+	Run(5)
+	Run(10)
+	Run(20)
 }
