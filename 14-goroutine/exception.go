@@ -3,6 +3,7 @@ package goroutine_sample
 import (
 	"fmt"
 	"runtime"
+	"runtime/debug"
 	"sync"
 	"time"
 )
@@ -23,21 +24,18 @@ func (s Server) monitor() {
 
 	select {
 	case <-s.ready:
-		//wg.Done() // 如果收到“结束"消息就给自己减一
-		//}
-
 		fmt.Println("Waiting for all job finish.")
 		s.wg.Wait() // 挂起等待业务线程全部结束
 		fmt.Println("WaitGroup reaches to 0")
 	}
 }
 
-// 业务管理函数
+// 业务管理函数(业务函数参数最好采用interface)
 func (s Server) job_manager(index int, job_func func(int)) {
 	defer func() { // 业务监管线程 defer
 		switch p := recover(); p.(type) { // 如果业务线程存在异常，处理之
 		case Error:
-			fmt.Printf("%s (panic)\n", p.(Error).Error_message)
+			fmt.Printf("%s (panic)\n%s", p.(Error).Error_message, debug.Stack())
 		default:
 		}
 
@@ -68,7 +66,6 @@ func (s Server) Start() {
 	}()
 
 	// 启动监控线程等待所有线程结束
-	//(*wg).Add(1) // 为监控线程自己加一
 	go s.monitor()
 
 	// 启动业务线程
@@ -89,7 +86,7 @@ func Run(proc_number int) {
 	server.Start()
 }
 
-// 业务函数
+// 业务函数( 最好采用 interface )
 func client(index int) {
 	time.Sleep(1 * time.Second)
 	fmt.Println(index, "Business goroutine is running...")
