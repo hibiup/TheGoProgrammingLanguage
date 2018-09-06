@@ -18,7 +18,7 @@ type Server struct {
 }
 
 // 主监控函数
-func (s *Server) monitor() {
+func (s Server) monitor() {
 	defer close(s.ready) // 保证 finish 关闭
 
 	select {
@@ -33,7 +33,7 @@ func (s *Server) monitor() {
 }
 
 // 业务管理函数
-func (s *Server) job_manager(index int, job_func func(int)) {
+func (s Server) job_manager(index int, job_func func(int)) {
 	defer func() { // 业务监管线程 defer
 		switch p := recover(); p.(type) { // 如果业务线程存在异常，处理之
 		case Error:
@@ -50,10 +50,15 @@ func (s *Server) job_manager(index int, job_func func(int)) {
 	fmt.Println(index, "Business goroutine finished normally")
 }
 
+// 初始化函数
+func (s *Server) init() {
+	s.wg = &sync.WaitGroup{}
+	s.ready = make(chan struct{})
+}
+
 // 服务启动函数
 func (s Server) Start() {
-	//wg := &sync.WaitGroup{}
-	//ready := make(chan struct{}) // 用于主线程接受退出通知
+	(&s).init()
 
 	defer func() { // 主线程 defer
 		for range s.ready {
@@ -80,7 +85,7 @@ func (s Server) Start() {
 // main 入口函数
 func Run(proc_number int) {
 	runtime.GOMAXPROCS(proc_number) // 设置并行线程数
-	server := &Server{&sync.WaitGroup{}, make(chan struct{})}
+	server := Server{}
 	server.Start()
 }
 
